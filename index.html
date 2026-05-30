@@ -159,7 +159,7 @@
     <div class="grid" id="galleryGrid"></div>
 
 <script>
-    // Kompletna, pełna baza 21 zadań z pełnymi opisami z Twojej listy
+    // Kompletna baza 21 zadań
     const listaZadan = [
         { kod: "MK2131", tekst: "Walet Kier – „Kontrabanda”:\nZrób zdjęcie, na którym dyskretnie wsuwasz komuś do kieszeni lub do torebki papierosa/iqosa, tak aby ta osoba o tym nie wiedziała. (Zdjęcie musi zostać wykonane aparatem solenizantki)." },
         { kod: "KA9123", tekst: "As Pik – „Cień mafii”:\nZrób zdjęcie, na którym widać Twój wyraźny cień padający na plecy niczego nieświadomej Julii. Ona nie może Cię zauważyć w tym momencie. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
@@ -184,9 +184,20 @@
         { kod: "GŚ6969", tekst: "Dama Trefl – „Otrucie”:\nZrób zdjęcie, na którym trzymasz dłoń nad szklanką innej osoby, jakbyś wrzucał/a tam „tajną pigułkę” (w rzeczywistości np. kostkę lodu lub borówkę). (Zdjęcie musi zostać wykonane aparatem solenizantki)." }
     ];
 
+    // Funkcja obsługująca błędy ładowania zdjęć (Bezpieczna, bez pętli)
+    function obslugaBleduZdjecia(imgElement, kod) {
+        imgElement.onerror = null; // Czyszczenie handlera blokuje pętlę nieskończoną
+        imgElement.style.display = 'none';
+        
+        const fallback = document.getElementById(`textFallback_${kod}`);
+        if (fallback) {
+            fallback.style.display = 'flex';
+        }
+    }
+
     const grid = document.getElementById('galleryGrid');
 
-    // Dynamicznie renderujemy karty
+    // Generowanie kart
     listaZadan.forEach(zadanie => {
         const container = document.createElement('div');
         container.className = 'card-container';
@@ -195,16 +206,20 @@
             this.classList.toggle('flipped');
         };
 
-        // Bezpieczne generowanie małych liter do nazwy pliku
-        const imgName = zadanie.kod.toLowerCase().replace('ś', 's');
+        // Generujemy dwie możliwe nazwy pliku dla kart z polskimi znakami (np. gś6969 oraz gs6969)
+        const nazwaMala = zadanie.kod.toLowerCase();
+        const nazwaBezPl = nazwaMala.replace('ś', 's');
 
-        // Naprawiony błąd poprzez zastosowanie document.getElementById wewnątrz onerror
         container.innerHTML = `
             <div class="card-inner">
                 <div class="card-front">
                     <div class="card-image-wrapper">
-                        <img src="./src/img/${imgName}.jpg" alt="Dowód ${zadanie.kod}" onerror="this.onerror=null; this.style.display='none'; document.getElementById('textFallback_${zadanie.kod}').style.display='flex';">
-                        <div id="textFallback_${zadanie.kod}" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; background-color:#202024; color:#72727e; font-size:14px; font-weight:500;">BRAK ZDJĘCIA W ARCHIWUM</div>
+                        <img src="./src/img/${nazwaMala}.jpg" 
+                             alt="Dowód ${zadanie.kod}" 
+                             loading="lazy"
+                             onerror="obslugaBleduZdjecia(this, '${zadanie.kod}')">
+                        
+                        <div id="textFallback_${zadanie.kod}" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; background-color:#202024; color:#72727e; font-size:14px; font-weight:500; text-align:center; padding:10px; box-sizing:border-box;">BRAK ZDJĘCIA W ARCHIWUM</div>
                     </div>
                     <div class="card-author-tag">AGENT: ${zadanie.kod}</div>
                 </div>
