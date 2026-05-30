@@ -211,7 +211,7 @@
 
     const grid = document.getElementById('galleryGrid');
 
-    // Generowanie kart
+    // Generowanie kart - wersja dopasowana dokładnie do Twoich plików na GitHubie (małe litery + .JPG)
     listaZadan.forEach(zadanie => {
         const container = document.createElement('div');
         container.className = 'card-container';
@@ -220,15 +220,17 @@
             this.classList.toggle('flipped');
         };
 
-        // Przywrócona pełna logika parsowania nazw plików graficznych
+        // 1. Nazwy plików na Twoim GitHubie są z małych liter.
         const nazwaMala = zadanie.kod.toLowerCase();
+        
+        // 2. Bezpieczna zamiana polskiego 'ś' na 's' (dla gś6969 -> gs6969)
         const nazwaBezPl = nazwaMala.replace('ś', 's');
 
         container.innerHTML = `
             <div class="card-inner">
                 <div class="card-front">
                     <div class="card-image-wrapper">
-                        <img src="./img/${nazwaBezPl}.jpg" 
+                        <img src="./img/${nazwaBezPl}.JPG" 
                              alt="Dowód ${zadanie.kod}" 
                              loading="lazy"
                              onerror="obslugaBleduZdjecia(this, '${zadanie.kod}')">
