@@ -46,7 +46,7 @@
         .card-container {
             background-color: transparent;
             height: 380px;
-            perspective: 1000px; /* Wymagane do efektu 3D */
+            perspective: 1000px;
             cursor: pointer;
         }
 
@@ -69,7 +69,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            -webkit-backface-visibility: hidden; /* Ukrywa drugą stronę podczas obrotu */
+            -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
@@ -78,7 +78,7 @@
             flex-direction: column;
         }
 
-        /* PRZÓD KARTY (Zdjęcie i Kod) */
+        /* PRZÓD KARTY (Zdjęcie, Imię i Kod) */
         .card-front {
             background-color: #16161a;
             border: 1px solid #24242b;
@@ -97,28 +97,42 @@
         .card-front img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ładnie docina zdjęcie do kadru */
+            object-fit: cover;
         }
 
         .card-author-tag {
             height: 20%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             background-color: #1c1c22;
-            color: #ff3366;
-            font-weight: bold;
-            font-size: 18px;
-            letter-spacing: 1px;
+            color: #fff;
             border-bottom-left-radius: 11px;
             border-bottom-right-radius: 11px;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .agent-name {
+            font-weight: bold;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .agent-code {
+            font-size: 12px;
+            color: #ff3366;
+            margin-top: 2px;
+            letter-spacing: 1px;
         }
 
         /* TYŁ KARTY (Treść zadania) */
         .card-back {
             background-color: #1f1f24;
             border: 1px solid #ff3366;
-            transform: rotateY(180deg); /* Domyślnie odwrócona o 180 stopni */
+            transform: rotateY(180deg);
             padding: 25px;
             justify-content: center;
             align-items: center;
@@ -159,34 +173,34 @@
     <div class="grid" id="galleryGrid"></div>
 
 <script>
-    // Kompletna baza 21 zadań
+    // Zaktualizowana baza – rozdzielone Imię oraz Kryptonim (kod)
     const listaZadan = [
-        { kod: "MK2131", tekst: "Walet Kier – „Kontrabanda”:\nZrób zdjęcie, na którym dyskretnie wsuwasz komuś do kieszeni lub do torebki papierosa/iqosa, tak aby ta osoba o tym nie wiedziała. (Zdjęcie musi zostać wykonane aparatem solenizantki)." },
-        { kod: "KA9123", tekst: "As Pik – „Cień mafii”:\nZrób zdjęcie, na którym widać Twój wyraźny cień padający na plecy niczego nieświadomej Julii. Ona nie może Cię zauważyć w tym momencie. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
-        { kod: "IK6812", tekst: "Dama Pik – „Dowód tożsamości”:\nZrób zdjęcie zrobione „z ukrycia” (np. zza wazonu, zza filaru) pokazujące profil dwóch rozmawiających osób, ciebie + solenizantki jakbyś prowadziła operacyje zbierania informacji. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
-        { kod: "KO8437", tekst: "10 Pik – „Czarny kocur”:\nSfotografuj osobę pijącą drinka w taki sposób, aby na zdjęciu – tuż obok jej szklanki – leżał niepostrzeżenie położony przez Ciebie czarny/czerwony element (np. czarna/czerwona karta lub kość). (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "MB4351", tekst: "As Kier – „Czyste ręce”:\nPrzekaż komuś kieliszek lub drinka tak, aby na zdjęciu było widać tylko Wasze dłonie i moment przekazania, ale Ty musisz mieć na sobie eleganckie rękawiczki (lub chusteczkę, żeby nie zostawić odcisków). (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "SB9659", tekst: "Król Kier – „Przejęcie ładunku”:\nZrób zdjęcie, na którym „podkradasz” lód z drinka lub jedzenie z talerza innej osoby za pomocą eleganckich szczypiec lub widelca, podczas gdy ona patrzy w drugą stronę. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "JK0751", tekst: "10 Kier – „Zasłona dymna”:\nSfotografuj stół z drinkami przez pryzmat unoszącego się dymu (np. z zimnych ogni, e-papierosa lub lodu) w taki sposób, aby klimat wyglądał jak z zadymionego baru z lat 20. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "PB2086", tekst: "Król Karo – „Pakt milczenia”:\nUchwyć na zdjęciu moment, w którym „przybijasz żółwika” lub potajemnie podajesz rękę innej osobie, ale Wasze dłonie muszą znajdować się pod stołem lub nisko (kadr z poziomu kolan). (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)." },
-        { kod: "PS8108", tekst: "Dama Kier – „Krwawy podpis”:\nNamów kogoś, by zostawił ślad czerwonej szminki na serwetce (lub zrób to sam/a), a następnie uchwyć kreatywnie na jednym zdjęciu serwetke oraz solenizantke. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "HB6409", tekst: "Król Pik - „Ochroniarz Dona”:\nStwórz kadr, na którym stoisz plecami do Julii w odległości około metra, z założonymi rękami (opcjonalnie w ciemnych okularach), podczas gdy ona z kimś rozmawia. Masz wyglądać jak jej osobisty, bezwzględny bodyguard pilnujący terenu. (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)." },
-        { kod: "MB7432", tekst: "Walet Karo – „Złoty strzał”:\nSfotografuj moment, w którym co najmniej 3 osoby jednocześnie stukają się kieliszkami, ale na zdjęciu musi być uchwycona spadająca w tle kość do gry (którą podrzucisz wolną ręką) wykonanie drugiej części dobrowolne. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "NZ6666", tekst: "„Zabezpieczanie dowodów”:\nZrób zdjęcie, na którym wkładasz do przezroczystego woreczka (np. strunowego) losowy przedmiot należący do innego gościa (np. zapalniczkę, pierścionek, klucze). Musisz mieć na sobie eleganckie rękawiczki lub chusteczkę, a właściciel rzeczy nie może Cię nakryć. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "MZ9999", tekst: "10 Trefl – „Świadek koronny”:\nZrób zdjęcie osobie, która jako pierwsza z gości pójdzie zjeść coś ciepłego lub weźmie kawałek tortu. Musisz uchwycić idealny moment jej pierwszego kęsa. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "JK9042", tekst: "Walet Trefl – „Ostatnie sekundy”:\nSfotografuj tarczę zegarka (lub telefon z godziną) na tle twarzy osoby, która w tym momencie głośno się śmieje. Ty wiesz, że jej czas ucieka... (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "KS1286", tekst: "Król Trefl - „Złoty strzał w ciemno”:\nWeź losowy śmieszny przedmiot i udawaj że odpalasz nim papierosa. Zrób zdjęcie z profilu, trzymając w ustach nieodpalonego papierosa (lub paluszek/słomkę). (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
-        { kod: "GH6767", tekst: "As Trefl - „Przesłuchanie trzeciego stopnia”:\nZaaranżuj zdjęcie, na którym siedzisz przy stole naprzeciwko kogoś, a jedynym źródłem światła jest mocna latarka z telefonu skierowana prosto w twarz tej osoby. Ty musisz pozostać w mroku. (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)." },
-        { kod: "MK3542", tekst: "Walet Pik – „Krwawy diament”:\nSfotografuj kostkę lodu ze swojego drinka, którą trzymasz w palcach pod światło latarki z telefonu, tak aby wyglądała jak potężny, luksusowy diament z przemytu." },
-        { kod: "MM5605", tekst: "10 Karo – „Szyfr”:\nUłóż z żetonów lub kart na stole tajemniczy symbol ( „J” jak Julia) i zrób zdjęcie z góry tak, aby w tle (poza głębią ostrości) było widać bawiących się ludzi. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
-        { kod: "JP5976", tekst: "As Karo – „Zabójcze spojrzenie”:\nZrób zdjęcie grupowe, na którym wszyscy się śmieją, a Ty jako jedyny/a patrzysz prosto w obiektyw z całkowicie zimną, mafijną krwią (zero uśmiechu). (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
-        { kod: "JZ0000", tekst: "Dama Karo – „Wypatrywanie celu”:\nZrób zdjęcie, na którym stoisz tyłem do obiektywu, patrząc przez okno altanki na zewnątrz, trzymając w ręku kieliszek, jakbyś kontrolował/a teren filii. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
-        { kod: "GŚ6969", tekst: "Dama Trefl – „Otrucie”:\nZrób zdjęcie, na którym trzymasz dłoń nad szklanką innej osoby, jakbyś wrzucał/a tam „tajną pigułkę” (w rzeczywistości np. kostkę lodu lub borówkę). (Zdjęcie musi zostać wykonane aparatem solenizantki)." }
+        { imie: "Martyna K", kod: "MK2131", tekst: "Walet Kier – „Kontrabanda”:\nZrób zdjęcie, na którym dyskretnie wsuwasz komuś do kieszeni lub do torebki papierosa/iqosa, tak aby ta osoba o tym nie wiedziała. (Zdjęcie musi zostać wykonane aparatem solenizantki)." },
+        { imie: "Kinga", kod: "KA9123", tekst: "As Pik – „Cień mafii”:\nZrób zdjęcie, na którym widać Twój wyraźny cień padający na plecy niczego nieświadomej Julii. Ona nie może Cię zauważyć w tym momencie. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
+        { imie: "Igor", kod: "IK6812", tekst: "Dama Pik – „Dowód tożsamości”:\nZrób zdjęcie zrobione „z ukrycia” (np. zza wazonu, zza filaru) pokazujące profil dwóch rozmawiających osób, ciebie + solenizantki jakbyś prowadziła operacyje zbierania informacji. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
+        { imie: "Karolina", kod: "KO8437", tekst: "10 Pik – „Czarny kocur”:\nSfotografuj osobę pijącą drinka w taki sposób, aby na zdjęciu – tuż obok jej szklanki – leżał niepostrzeżenie położony przez Ciebie czarny/czerwony element (np. czarna/czerwona karta lub kość). (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Martyna B", kod: "MB4351", tekst: "As Kier – „Czyste ręce”:\nPrzekaż komuś kieliszek lub drinka tak, aby na zdjęciu było widać tylko Wasze dłonie i moment przekazania, ale Ty musisz mieć na sobie eleganckie rękawiczki (lub chusteczkę, żeby nie zostawić odcisków). (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Sławek", kod: "SB9659", tekst: "Król Kier – „Przejęcie ładunku”:\nZrób zdjęcie, na którym „podkradasz” lód z drinka lub jedzenie z talerza innej osoby za pomocą eleganckich szczypiec lub widelca, podczas gdy ona patrzy w drugą stronę. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Jakub K", kod: "JK0751", tekst: "10 Kier – „Zasłona dymna”:\nSfotografuj stół z drinkami przez pryzmat unoszącego się dymu (np. z zimnych ogni, e-papierosa lub lodu) w taki sposób, aby klimat wyglądał jak z zadymionego baru z lat 20. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Piotr", kod: "PB2086", tekst: "Król Karo – „Pakt milczenia”:\nUchwyć na zdjęciu moment, w którym „przybijasz żółwika” lub potajemnie podajesz rękę innej osobie, ale Wasze dłonie muszą znajdować się pod stołem lub nisko (kadr z poziomu kolan). (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)." },
+        { imie: "Paulina", kod: "PS8108", tekst: "Dama Kier – „Krwawy podpis”:\nNamów kogoś, by zostawił ślad czerwonej szminki na serwetce (lub zrób to sam/a), a następnie uchwyć kreatywnie na jednym zdjęciu serwetke oraz solenizantke. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Hubert", kod: "HB6409", tekst: "Król Pik - „Ochroniarz Dona”:\nStwórz kadr, na którym stoisz plecami do Julii w odległości około metra, z założonymi rękami (opcjonalnie w ciemnych okularach), podczas gdy ona z kimś rozmawia. Masz wyglądać jak jej osobisty, bezwzględny bodyguard pilnujący terenu. (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)." },
+        { imie: "Marika", kod: "MB7432", tekst: "Walet Karo – „Złoty strzał”:\nSfotografuj moment, w którym co najmniej 3 osoby jednocześnie stukają się kieliszkami, ale na zdjęciu musi być uchwycona spadająca w tle kość do gry (którą podrzucisz wolną ręką) wykonanie drugiej części dobrowolne. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Norbert", kod: "NZ6666", tekst: "„Zabezpieczanie dowodów”:\nZrób zdjęcie, na którym wkładasz do przezroczystego woreczka (np. strunowego) losowy przedmiot należący do innego gościa (np. zapalniczkę, pierścionek, klucze). Musisz mieć na sobie eleganckie rękawiczki lub chusteczkę, a właściciel rzeczy nie może Cię nakryć. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Michał", kod: "MZ9999", tekst: "10 Trefl – „Świadek koronny”:\nZrób zdjęcie osobie, która jako pierwsza z gości pójdzie zjeść coś ciepłego lub weźmie kawałek tortu. Musisz uchwycić idealny moment jej pierwszego kęsa. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Julita", kod: "JK9042", tekst: "Walet Trefl – „Ostatnie sekundy”:\nSfotografuj tarczę zegarka (lub telephone z godziną) na tle twarzy osoby, która w tym momencie głośno się śmieje. Ty wiesz, że jej czas ucieka... (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Kuba S", kod: "KS1286", tekst: "Król Trefl - „Złoty strzał w ciemno”:\nWeź losowy śmieszny przedmiot i udawaj że odpalasz nim papierosa. Zrób zdjęcie z profilu, trzymając w ustach nieodpalonego papierosa (lub paluszek/słomkę). (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
+        { imie: "Grzegorzyca", kod: "GH6767", tekst: "As Trefl - „Przesłuchanie trzeciego stopnia”:\nZaaranżuj zdjęcie, na którym siedzisz przy stole naprzeciwko kogoś, a jedynym źródłem światła jest mocna latarka z telefonu skierowana prosto w twarz tej osoby. Ty musisz pozostać w mroku. (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)." },
+        { imie: "Maja", kod: "MK3542", tekst: "Walet Pik – „Krwawy diament”:\nSfotografuj kostkę lodu ze swojego drinka, którą trzymasz w palcach pod światło latarki z telefonu, tak aby wyglądała jak potężny, luksusowy diament z przemytu." },
+        { imie: "Mikołaj", kod: "MM5605", tekst: "10 Karo – „Szyfr”:\nUłóż z żetonów lub kart na stole tajemniczy symbol ( „J” jak Julia) i zrób zdjęcie z góry tak, aby w tle (poza głębią ostrości) było widać bawiących się ludzi. (Zdjęcie musi zostać wykonane aparatem solenizantki)" },
+        { imie: "Julia P", kod: "JP5976", tekst: "As Karo – „Zabójcze spojrzenie”:\nZrób zdjęcie grupowe, na którym wszyscy się śmieją, a Ty jako jedyny/a patrzysz prosto w obiektyw z całkowicie zimną, mafijną krwią (zero uśmiechu). (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
+        { imie: "Julia Z", kod: "JZ0000", tekst: "Dama Karo – „Wypatrywanie celu”:\nZrób zdjęcie, na którym stoisz tyłem do obiektywu, patrząc przez okno altanki na zewnątrz, trzymając w ręku kieliszek, jakbyś kontrolował/a teren filii. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)" },
+        { imie: "Gabriela", kod: "GŚ6969", tekst: "Dama Trefl – „Otrucie”:\nZrób zdjęcie, na którym trzymasz dłoń nad szklanką innej osoby, jakbyś wrzucał/a tam „tajną pigułkę” (w rzeczywistości np. kostkę lodu lub borówkę). (Zdjęcie musi zostać wykonane aparatem solenizantki)." }
     ];
 
-    // Funkcja obsługująca błędy ładowania zdjęć (Bezpieczna, bez pętli)
+    // Bezpieczny fallback dla brakujących obrazków
     function obslugaBleduZdjecia(imgElement, kod) {
-        imgElement.onerror = null; // Czyszczenie handlera blokuje pętlę nieskończoną
+        imgElement.onerror = null;
         imgElement.style.display = 'none';
         
         const fallback = document.getElementById(`textFallback_${kod}`);
@@ -197,7 +211,7 @@
 
     const grid = document.getElementById('galleryGrid');
 
-    // Generowanie kart
+    // Generowanie kart ze zmapowanymi imionami
     listaZadan.forEach(zadanie => {
         const container = document.createElement('div');
         container.className = 'card-container';
@@ -206,22 +220,24 @@
             this.classList.toggle('flipped');
         };
 
-        // Generujemy dwie możliwe nazwy pliku dla kart z polskimi znakami (np. gś6969 oraz gs6969)
-        const nazwaMala = zadanie.kod.toLowerCase();
-        const nazwaBezPl = nazwaMala.replace('ś', 's');
+        // Nazwy plików pozostają generowane z kryptonimu (małe litery, np. mm5605.jpg)
+        const imgName = zadanie.kod.toLowerCase().replace('ś', 's');
 
         container.innerHTML = `
             <div class="card-inner">
                 <div class="card-front">
                     <div class="card-image-wrapper">
-                        <img src="./src/img/${nazwaMala}.jpg" 
+                        <img src="./img/${imgName}.jpg" 
                              alt="Dowód ${zadanie.kod}" 
                              loading="lazy"
                              onerror="obslugaBleduZdjecia(this, '${zadanie.kod}')">
                         
-                        <div id="textFallback_${zadanie.kod}" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; background-color:#202024; color:#72727e; font-size:14px; font-weight:500; text-align:center; padding:10px; box-sizing:border-box;">BRAK ZDJĘCIA W ARCHIWUM</div>
+                        <div id="textFallback_${zadanie.kod}" style="newFallback">BRAK ZDJĘCIA W ARCHIWUM</div>
                     </div>
-                    <div class="card-author-tag">AGENT: ${zadanie.kod}</div>
+                    <div class="card-author-tag">
+                        <div class="agent-name">${zadanie.imie}</div>
+                        <div class="agent-code">KRYPTONIM: ${zadanie.kod}</div>
+                    </div>
                 </div>
                 <div class="card-back">
                     <h3>KRYPTONIM: ${zadanie.kod}</h3>
@@ -230,6 +246,18 @@
             </div>
         `;
         
+        // Drobny styl inline poprawiający wygląd fallbacku w nowym kodzie
+        const fallbackStyle = container.querySelector(`#textFallback_${zadanie.kod}`).style;
+        fallbackStyle.display = 'none';
+        fallbackStyle.width = '100%';
+        fallbackStyle.height = '100%';
+        fallbackStyle.alignItems = 'center';
+        fallbackStyle.justifyContent = 'center';
+        fallbackStyle.backgroundColor = '#202024';
+        fallbackStyle.color = '#72727e';
+        fallbackStyle.fontSize = '14px';
+        fallbackStyle.fontWeight = '500';
+
         grid.appendChild(container);
     });
 </script>
