@@ -211,7 +211,7 @@
 
     const grid = document.getElementById('galleryGrid');
 
-    // Generowanie kart ze zmapowanymi imionami
+    // Generowanie kart
     listaZadan.forEach(zadanie => {
         const container = document.createElement('div');
         container.className = 'card-container';
@@ -220,14 +220,15 @@
             this.classList.toggle('flipped');
         };
 
-        // Nazwy plików pozostają generowane z kryptonimu (małe litery, np. mm5605.jpg)
-        const imgName = zadanie.kod.toLowerCase().replace('ś', 's');
+        // Przywrócona pełna logika parsowania nazw plików graficznych
+        const nazwaMala = zadanie.kod.toLowerCase();
+        const nazwaBezPl = nazwaMala.replace('ś', 's');
 
         container.innerHTML = `
             <div class="card-inner">
                 <div class="card-front">
                     <div class="card-image-wrapper">
-                        <img src="./img/${imgName}.jpg" 
+                        <img src="./src/img/${nazwaBezPl}.jpg" 
                              alt="Dowód ${zadanie.kod}" 
                              loading="lazy"
                              onerror="obslugaBleduZdjecia(this, '${zadanie.kod}')">
@@ -246,7 +247,7 @@
             </div>
         `;
         
-        // Drobny styl inline poprawiający wygląd fallbacku w nowym kodzie
+        // Styl dla bloku zastępczego
         const fallbackStyle = container.querySelector(`#textFallback_${zadanie.kod}`).style;
         fallbackStyle.display = 'none';
         fallbackStyle.width = '100%';
@@ -261,6 +262,3 @@
         grid.appendChild(container);
     });
 </script>
-
-</body>
-</html>
