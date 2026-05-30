@@ -3,268 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kryptonim: Mafia</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
+    <title>Archiwum Mafii: Dowody Rzeczowe</title>
     <style>
         body {
             background-color: #0f0f12;
             color: #e0e0e6;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
         }
-        .container {
-            background-color: #16161a;
-            border: 1px solid #24242b;
-            border-radius: 12px;
-            padding: 30px;
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
+
         h1 {
             color: #ff3366;
-            font-size: 26px;
-            margin-top: 0;
-            margin-bottom: 5px;
+            font-size: 28px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-align: center;
         }
+
         .subtitle {
             color: #72727e;
             font-size: 14px;
-            margin-bottom: 25px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 14px;
-            background-color: #202024;
-            border: 1px solid #33333b;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 18px;
-            box-sizing: border-box;
+            margin-bottom: 40px;
             text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            transition: border-color 0.3s;
         }
-        input[type="text"]:focus {
-            border-color: #ff3366;
-            outline: none;
-        }
-        button {
-            background-color: #ff3366;
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
+
+        /* Siatka kafelków */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
             width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Kontener dla efektu 3D obracania */
+        .card-container {
+            background-color: transparent;
+            height: 380px;
+            perspective: 1000px; /* Wymagane do efektu 3D */
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        /* Klasa dodawana przez JavaScript po kliknięciu */
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* Przód i Tył karty */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Ukrywa drugą stronę podczas obrotu */
+            backface-visibility: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* PRZÓD KARTY (Zdjęcie i Kod) */
+        .card-front {
+            background-color: #16161a;
+            border: 1px solid #24242b;
+        }
+
+        .card-image-wrapper {
+            width: 100%;
+            height: 80%;
+            border-top-left-radius: 11px;
+            border-top-right-radius: 11px;
+            overflow: hidden;
+            background-color: #202024;
+            position: relative;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ładnie docina zdjęcie do kadru */
+        }
+
+        .card-author-tag {
+            height: 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1c1c22;
+            color: #ff3366;
             font-weight: bold;
-            text-transform: uppercase;
+            font-size: 18px;
             letter-spacing: 1px;
-            transition: background-color 0.2s, transform 0.1s;
+            border-bottom-left-radius: 11px;
+            border-bottom-right-radius: 11px;
         }
-        button:hover {
-            background-color: #e02454;
-        }
-        button:active {
-            transform: scale(0.98);
-        }
-        .card {
-            margin-top: 25px;
+
+        /* TYŁ KARTY (Treść zadania) */
+        .card-back {
             background-color: #1f1f24;
-            border-left: 4px solid #ff3366;
-            padding: 22px;
-            border-radius: 0 8px 8px 0;
-            text-align: left;
-            display: none;
-            animation: fadeIn 0.4s ease-in-out forwards;
+            border: 1px solid #ff3366;
+            transform: rotateY(180deg); /* Domyślnie odwrócona o 180 stopni */
+            padding: 25px;
+            justify-content: center;
+            align-items: center;
         }
-        .card h3 {
-            margin: 0 0 12px 0;
+
+        .card-back h3 {
+            margin: 0 0 15px 0;
             color: #ff3366;
             font-size: 16px;
+            text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .card p {
+
+        .card-back p {
             margin: 0;
+            font-size: 14px;
             line-height: 1.6;
             color: #d1d1d6;
-            font-size: 15px;
             white-space: pre-line;
         }
-        .warning-alert {
-            color: #ff3366;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 12px;
-            border: 1px dashed #ff3366;
-            padding: 10px;
-            border-radius: 6px;
-            background-color: rgba(255, 51, 102, 0.05);
-            font-size: 13px;
-            text-align: center;
-        }
-        .error {
-            color: #ff4444;
-            margin-top: 15px;
-            font-size: 14px;
-            font-weight: 500;
-            display: none;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        /* Responsywność */
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .card-container {
+                height: 340px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>KRYPTONIM: MAFIA</h1>
-    <div class="subtitle">Wprowadź swój unikalny kod z karty dostępu</div>
-    
-    <input type="text" id="keyCode" placeholder="Wpisz kod (np. XX1234)" autocomplete="off" autofocus>
-    <button onclick="sprawdzKod()">Dekoduj akta</button>
-    
-    <div id="errorMsg" class="error">BŁĄD DEKODOWANIA: Niepoprawny kryptonim.</div>
-    
-    <div id="resultCard" class="card">
-        <h3 id="taskTitle">STATUS: AKTYWNY</h3>
-        <p id="taskContent"></p>
-    </div>
-</div>
+    <h1>Archiwum Mafii: Dowody Rzeczowe</h1>
+    <div class="subtitle">Kliknij na kartę, aby odwrócić i poznać szczegóły misji</div>
+
+    <div class="grid" id="galleryGrid">
+        </div>
 
 <script>
-    const bazaZadan = {
-        "4e9eea24fec8b000722128df2c98f3a1": {
-            kod: "MK2131",
-            tekst: "Walet Kier – „Kontrabanda”:\nZrób zdjęcie, na którym dyskretnie wsuwasz komuś do kieszeni lub do torebki papierosa/iqosa, tak aby ta osoba o tym nie wiedziała. (Zdjęcie musi zostać wykonane aparatem solenizantki)."
-        },
-        "73ca6ca3b8dc15b94a61a505c5d8eb96": {
-            kod: "KA9123",
-            tekst: "As Pik – „Cień mafii”:\nZrób zdjęcie, na którym widać Twój wyraźny cień padający na plecy niczego nieświadomej Julii. Ona nie może Cię zauważyć w tym momencie. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)"
-        },
-        "738160ce14549a0d2479ae0d586c5332": {
-            kod: "IK6812",
-            tekst: "Dama Pik – „Dowód tożsamości”:\nZrób zdjęcie zrobione „z ukrycia” (np. zza wazonu, zza filaru) pokazujące profil dwóch rozmawiających osób, ciebie + solenizantki jakbyś prowadziła operacyje zbierania informacji. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)"
-        },
-        "51fbbc40cefe18f705d58cff3e6a4334": {
-            kod: "KO8437",
-            tekst: "10 Pik – „Czarny kocur”:\nSfotografuj osobę pijącą drinka w taki sposób, aby na zdjęcia – tuż obok jej szklanki – leżał niepostrzeżenie położony przez Ciebie czarny/czerwony element (np. czarna/czerwona karta lub kość). (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "b1275be83c45389752d2470fb66bf496": {
-            kod: "MB4351",
-            tekst: "As Kier – „Czyste ręce”:\nPrzekaż komuś kieliszek lub drinka tak, aby na zdjęciu było widać tylko Wasze dłonie i moment przekazania, ale Ty musisz mieć na sobie eleganckie rękawiczki (lub chusteczkę, żeby nie zostawić odcisków). (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "90a04a5a3d61f713167d6878869e4581": {
-            kod: "SB9659",
-            tekst: "Król Kier – „Przejęcie ładunku”:\nZrób zdjęcie, na którym „podkradasz” lód z drinka lub jedzenie z talerza innej osoby za pomocą eleganckich szczypiec lub widelca, podczas gdy ona patrzy w drugą stronę. (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "28a326529873bfc34225da3b1d8afcdc": {
-            kod: "JK0751",
-            tekst: "10 Kier – „Zasłona dymna”:\nSfotografuj stół z drinkami przez pryzmat unoszącego się dymu (np. z zimnych ogni, e-papierosa lub lodu) w taki sposób, aby klimat wyglądał jak z zadymionego baru z lat 20. (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "1ccc66e55f56e640bcae343ee643ffe0": {
-            kod: "PB2086",
-            tekst: "Król Karo – „Pakt milczenia”:\nUchwyć na zdjęciu moment, w którym „przybijasz żółwika” lub potajemnie podajesz rękę innej osobie, ale Wasze dłonie muszą znajdować się pod stołem lub nisko (kadr z poziomu kolan). (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)."
-        },
-        "8e4cf9336c70630b4738ef0b0a031724": {
-            kod: "PS8108",
-            tekst: "Dama Kier – „Krwawy podpis”:\nNamów kogoś, by zostawił ślad czerwonej szminki na serwetce (lub zrób to sam/a), a następnie uchwyć kreatywnie na jednym zdjęciu serwetke oraz solenizantke. (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "e480a85c63e807aca31087cec691af13": {
-            kod: "HB6409",
-            tekst: "Król Pik - „Ochroniarz Dona”:\nStwórz kadr, na którym stoisz plecami do Julii w odległości około metra, z założonymi rękami (opcjonalnie w ciemnych okularach), podczas gdy ona z kimś rozmawia. Masz wyglądać jak jej osobisty, bezwzględny bodyguard pilnujący terenu. (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)."
-        },
-        "1000cdf8ea21b111f13ea54e8bc51f8a": {
-            kod: "MB7432",
-            tekst: "Walet Karo – „Złoty strzał”:\nSfotografuj moment, w którym co najmniej 3 osoby jednocześnie stukają się kieliszkami, ale na zdjęciu musi być uchwycona spadająca w tle kość do gry (którą podrzucisz wolną ręką) wykonanie drugiej części dobrowolne. (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "3a025d9aea459bf68b9def8df296456d": {
-            kod: "NZ6666",
-            tekst: "„Zabezpieczanie dowodów”:\nZrób zdjęcie, na którym wkładasz do przezroczystego woreczka (np. strunowego) losowy przedmiot należący do innego gościa (np. zapalniczkę, pierścionek, klucze). Musisz mieć na sobie eleganckie rękawiczki lub chusteczkę, a właściciel rzeczy nie może Cię nakryć. (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "d8a7ca272075a1646d12442673e01cca": {
-            kod: "MZ9999",
-            tekst: "10 Trefl – „Świadek koronny”:\nZrób zdjęcie osobie, która jako pierwsza z gości pójdzie zjeść coś ciepłego lub weźmie kawałek tortu. Musisz uchwycić idealny moment jej pierwszego kęsa. (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "32f281f23e562f5a76e0c442d4b53b62": {
-            kod: "JK9042",
-            tekst: "Walet Trefl – „Ostatnie sekundy”:\nSfotografuj tarczę zegarka (lub telefon z godziną) na tle twarzy osoby, która w tym momencie głośno się śmieje. Ty wiesz, że jej czas ucieka... (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "06644d80ad31d0d67868e5d324805aed": {
-            kod: "KS1286",
-            tekst: "Król Trefl - „Złoty strzał w ciemno”:\nWeź losowy śmieszny przedmiot i udawaj że odpalasz nim papierosa. Zrób zdjęcie z profilu, trzymając w ustach nieodpalonego papierosa (lub paluszek/słomkę). (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)"
-        },
-        "01ab03bc4fbe88b8eb934c21ae1fa2df": {
-            kod: "GH6767",
-            tekst: "As Trefl - „Przesłuchanie trzeciego stopnia”:\nZaaranżuj zdjęcie, na którym siedzisz przy stole naprzeciwko kogoś, a jedynym źródłem światła jest mocna latarka z telefonu skierowana prosto w twarz tej osoby. Ty musisz pozostać w mroku. (Zdjęcie musi zostać wykonane aparatem solenizantki. Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem, możesz poprosić go o wykonanie tego zdjęcia)."
-        },
-        "75ce3aa0d4c21d96182de280a273679b": {
-            kod: "MK3542",
-            tekst: "Walet Pik – „Krwawy diament”:\nSfotografuj kostkę lodu ze swojego drinka, którą trzymasz w palcach pod światło latarki z telefonu, tak aby wyglądała jak potężny, luksusowy diament z przemytu."
-        },
-        "85abe1bed1a4ff7fc04e0aae686e5030": {
-            kod: "MM5605",
-            tekst: "10 Karo – „Szyfr”:\nUłóż z żetonów lub kart na stole tajemniczy symbol ( „J” jak Julia) i zrób zdjęcie z góry tak, aby w tle (poza głębią ostrości) było widać bawiących się ludzi. (Zdjęcie musi zostać wykonane aparatem solenizantki)"
-        },
-        "acbed9b0ad43f27af655c3438ac4de63": {
-            kod: "JP5976",
-            tekst: "As Karo – „Zabójcze spojrzenie”:\nZrób zdjęcie grupowe, na którym wszyscy się śmieją, a Ty jako jedyny/a patrzysz prosto w obiektyw z całkowicie zimną, mafijną krwią (zero uśmiechu). (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)"
-        },
-        "77d826dbe30be0f21faf6efa61abbeca": {
-            kod: "JZ0000",
-            tekst: "Dama Karo – „Wypatrywanie celu”:\nZrób zdjęcie, na którym stoisz tyłem do obiektywu, patrząc przez okno altanki na zewnątrz, trzymając w ręku kieliszek, jakbyś kontrolował/a teren filii. (Zdjęcie musi zostać wykonane aparatem solenizantki, Członek mafii w czerwonej koszuli jest zaznajomiony z tym zadaniem możesz poprosić go o wykonanie zdjęcia.)"
-        },
-        "e8475d7949eb907e353b26b083652b3e": {
-            kod: "GS6969",
-            tekst: "Dama Trefl – „Otrucie”:\nZrób zdjęcie, na którym trzymasz dłoń nad szklanką innej osoby, jakbyś wrzucał/a tam „tajną pigułkę” (w rzeczywistości np. kostkę lodu lub borówkę). (Zdjęcie musi zostać wykonane aparatem solenizantki)."
-        },
-        "2df0488270eb05a551cf9a77d1153e24": {
-            kod: "GŚ6969",
-            tekst: "Dama Trefl – „Otrucie”:\nZrób zdjęcie, na którym trzymasz dłoń nad szklanką innej osoby, jakbyś wrzucał/a tam „tajną pigułkę” (w rzeczywistości np. kostkę lodu lub borówkę). (Zdjęcie musi zostać wykonane aparatem solenizantki)."
-        }
-    };
+    // Kompletna baza 21 zadań spięta z plikami graficznymi
+    const listaZadan = [
+        { kod: "MK2131", tekst: "Walet Kier – „Kontrabanda”:\nZrób zdjęcie, na którym dyskretnie wsuwasz komuś do kieszeni lub do torebki papierosa/iqosa..." },
+        { kod: "KA9123", tekst: "As Pik – „Cień mafii”:\nZrób zdjęcie, na którym widać Twój wyraźny cień padający na plecy niczego nieświadomej Julii..." },
+        { kod: "IK6812", tekst: "Dama Pik – „Dowód tożsamości”:\nZrób zdjęcie zrobione „z ukrycia” pokazujące profil dwóch rozmawiających osób, ciebie + solenizantki..." },
+        { kod: "KO8437", tekst: "10 Pik – „Czarny kocur”:\nSfotografuj osobę pijącą drinka w taki sposób, aby na zdjęcia – tuż obok jej szklanki – leżał czarny/czerwony element..." },
+        { kod: "MB4351", tekst: "As Kier – „Czyste ręce”:\nPrzekaż komuś kieliszek lub drinka tak, aby widać było tylko Wasze dłonie, ale Ty musisz mieć na sobie eleganckie rękawiczki..." },
+        { kod: "SB9659", tekst: "Król Kier – „Przejęcie ładunku”:\nZrób zdjęcie, na którym „podkradasz” lód z drinka lub jedzenie z talerza innej osoby za pomocą szczypiec lub widelca..." },
+        { kod: "JK0751", tekst: "10 Kier – „Zasłona dymna”:\nSfotografuj stół z drinkami przez pryzmat unoszącego się dymu, tworząc klimat jak z zadymionego baru z lat 20..." },
+        { kod: "PB2086", tekst: "Król Karo – „Pakt milczenia”:\nUchwyć na zdjęciu moment, w którym „przybijasz żółwika” lub potajemnie podajesz rękę innej osobie pod stołem..." },
+        { kod: "PS8108", tekst: "Dama Kier – „Krwawy podpis”:\nNamów kogoś, by zostawił ślad czerwonej szminki na serwetce, a następnie uchwyć na jednym zdjęciu serwetke oraz solenizantke..." },
+        { kod: "HB6409", tekst: "Król Pik - „Ochroniarz Dona”:\nStwórz kadr, na którym stoisz plecami do Julii w odległości około metra, z założonymi rękami, pilnując terenu..." },
+        { kod: "MB7432", tekst: "Walet Karo – „Złoty strzał”:\nSfotografuj moment, w którym co najmniej 3 osoby jednocześnie stukają się kieliszkami, uwieczniając spadającą w tle kość..." },
+        { kod: "NZ6666", tekst: "„Zabezpieczanie dowodów”:\nZrób zdjęcie, na którym wkładasz do przezroczystego woreczka losowy przedmiot należący do innego gościa bez jego wiedzy..." },
+        { kod: "MZ9999", tekst: "10 Trefl – „Świadek koronny”:\nZrób zdjęcie osobie, która jako pierwsza z gości pójdzie zjeść coś ciepłego lub weźmie kawałek tortu w momencie pierwszego kęsa..." },
+        { kod: "JK9042", tekst: "Walet Trefl – „Ostatnie sekundy”:\nSfotografuj tarczę zegarka (lub telefon z godziną) na tle twarzy osoby, która w tym momencie głośno się śmieje..." },
+        { kod: "KS1286", tekst: "Król Trefl - „Złoty strzał w ciemno”:\nWeź losowy śmieszny przedmiot i udawaj że odpalasz nim papierosa. Zrób zdjęcie z profilu trzymając przedmiot w ustach..." },
+        { kod: "GH6767", tekst: "As Trefl - „Przesłuchanie trzeciego stopnia”:\nZaaranżuj zdjęcie, na którym siedzisz przy stole naprzeciwko kogoś, świecąc mu w twarz latarką, samemu pozostając w mroku..." },
+        { kod: "MK3542", tekst: "Walet Pik – „Krwawy diament”:\nSfotografuj kostkę lodu ze swojego drinka trzymaną w palcach pod światło latarki, by wyglądała jak diament z przemytu..." },
+        { kod: "MM5605", tekst: "10 Karo – „Szyfr”:\nUłóż z żetonów lub kart na stole tajemniczy symbol („J” jak Julia) i zrób zdjęcie z góry tak, by w tle było widać ludzi..." },
+        { kod: "JP5976", tekst: "As Karo – „Zabójcze spojrzenie”:\nZrób zdjęcie grupowe, na którym wszyscy się śmieją, a Ty jako jedyny/a patrzysz prosto w obiektyw bez uśmiechu..." },
+        { kod: "JZ0000", tekst: "Dama Karo – „Wypatrywanie celu”:\nZrób zdjęcie, na którym stoisz tyłem do obiektywu, patrząc przez okno altanki na zewnątrz z kieliszkiem w ręku..." },
+        { kod: "GŚ6969", tekst: "Dama Trefl – „Otrucie”:\nZrób zdjęcie, na którym trzymasz dłoń nad szklanką innej osoby, jakbyś wrzucał/a tam „tajną pigułkę” (np. borówkę)..." }
+    ];
 
-    function sprawdzKod() {
-        const input = document.getElementById('keyCode').value.trim().toLowerCase();
-        const errorMsg = document.getElementById('errorMsg');
-        const resultCard = document.getElementById('resultCard');
-        const taskTitle = document.getElementById('taskTitle');
-        const taskContent = document.getElementById('taskContent');
-        
-        const hashedInput = md5(input);
-        
-        if (bazaZadan[hashedInput]) {
-            errorMsg.style.display = 'none';
-            taskTitle.innerText = `KRYPTONIM AKTYWNY: ${bazaZadan[hashedInput].kod}`;
-            
-            // Podmieniamy innerText na innerHTML, dodając automatycznie sformatowaną uwagę przed tekstem zadania
-            taskContent.innerHTML = `<span class="warning-alert">*UWAGA WYKONUJ ZADANIA POTAJEMNIE, IM KAŻDY MNIEJ WIE TYM LEPIEJ ŚPI :)*</span>` + bazaZadan[hashedInput].tekst;
-            
-            resultCard.style.display = 'block';
-        } else {
-            resultCard.style.display = 'none';
-            errorMsg.style.display = 'block';
-        }
-    }
+    const grid = document.getElementById('galleryGrid');
 
-    document.getElementById('keyCode').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            sprawdzKod();
-        }
+    // Dynamicznie renderujemy karty
+    listaZadan.forEach(zadanie => {
+        const container = document.createElement('div');
+        container.className = 'card-container';
+        
+        // Funkcja obracania karty po kliknięciu
+        container.onclick = function() {
+            this.classList.toggle('flipped');
+        };
+
+        // Zmiana kodu na małe litery na potrzeby pasującej nazwy pliku graficznego
+        const imgName = zadanie.kod.toLowerCase().replace('ś', 's');
+
+        container.innerHTML = `
+            <div class="card-inner">
+                <div class="card-front">
+                    <div class="card-image-wrapper">
+                        <img src="img/${imgName}.jpg" alt="Dowód ${zadanie.kod}" onerror="this.src='https://via.placeholder.com/300x250/202024/ff3366?text=Brak+zdj%C4%99cia';">
+                    </div>
+                    <div class="card-author-tag">AGENT: ${zadanie.kod}</div>
+                </div>
+                <div class="card-back">
+                    <h3>KRYPTONIM: ${zadanie.kod}</h3>
+                    <p>${zadanie.tekst}</p>
+                </div>
+            </div>
+        `;
+        
+        grid.appendChild(container);
     });
 </script>
 
