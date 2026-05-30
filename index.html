@@ -204,7 +204,7 @@
             <div class="card-inner">
                 <div class="card-front">
                     <div class="card-image-wrapper">
-                        <img src="img/${imgName}.jpg" alt="Dowód ${zadanie.kod}" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x250/202024/ff3366?text=Brak+zdj%C4%99cia';">
+                        <img src="./img/${imgName}.jpg" alt="Dowód ${zadanie.kod}" onerror="this.onerror=null; this.style.display='none'; textFallback_${zadanie.kod}.style.display='flex';">
                     </div>
                     <div class="card-author-tag">AGENT: ${zadanie.kod}</div>
                 </div>
